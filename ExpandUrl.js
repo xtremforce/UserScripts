@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.2
+// @version    0.1.3
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @include       *://*iapps.im/*
@@ -13,136 +13,13 @@
 
 
 (function() {
-    // URL for the LongURL API
-    this.api_endpoint = 'http://api.longurl.org/v2/';
-    this.script_version = '2.0';
-    this.known_services = {};
+    
     this.link_cache = [];
     this.ajax_queue = [];
     this.tooltip_node;
     this.tooltip_timout;
     this.modlinks_timeout;
     this.current_link;
-    
-    /*
-     * Name: xhr,XmlHttpRequest AJAX封装函数
-     * Description: 一个ajax调用封装类,仿jquery的ajax调用方式
-     * Author:十年灯
-     * Url: http://jo2.org
-     */
-    xhr = function() {
-        var ajax = function() {
-                return ('XMLHttpRequest' in window) ? function() {
-                    return new XMLHttpRequest();
-                } : function() {
-                    return new ActiveXObject("Microsoft.XMLHTTP");
-                }
-            }(),
-            formatData = function(fd) {
-                var res = '';
-                for (var f in fd) {
-                    res += f + '=' + fd[f] + '&';
-                }
-                return res.slice(0, -1);
-            },
-            AJAX = function(ops) {
-                var root = this,
-                    req = ajax();
-                root.url = ops.url;
-                root.type = ops.type || 'responseText';
-                root.method = ops.method || 'GET';
-                root.async = ops.async || true;
-                root.data = ops.data || {};
-                root.complete = ops.complete || function() {};
-                root.success = ops.success || function() {};
-                root.error = ops.error || function(s) {
-                    alert(root.url + '->status:' + s + 'error!')
-                };
-                root.abort = req.abort;
-                root.setData = function(data) {
-                    for (var d in data) {
-                        root.data[d] = data[d];
-                    }
-                }
-                root.send = function() {
-                    var datastring = formatData(root.data),
-                        sendstring, get = false,
-                        async = root.async,
-                        complete = root.complete,
-                        method = root.method,
-                        type = root.type;
-                    if (method === 'GET') {
-                        if(datastring !=null){
-                            root.url += '?' + datastring;
-                        }
-                        get = true;
-                    }
-                    req.open(method, root.url, async);
-                    if (!get) {
-                        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                        sendstring = datastring;
-                    }
-                    //在send之前重置onreadystatechange方法,否则会出现新的同步请求会执行两次成功回调(chrome等在同步请求时也会执行onreadystatechange)
-                    req.onreadystatechange = async ? function() {
-                        if (req.readyState == 4) {
-                            complete();
-                            if (req.status == 200) {
-                                if(root.type=='get_redirect_url'){
-                                    root.success(req.responseURL);
-                                }else{
-                                    root.success(req[type]);
-                                }
-                            } else {
-                                root.error(req.status);
-                            }
-                        }
-                    } : null;
-                    req.send(sendstring);
-                    if (!async) {
-                        complete();
-                        root.success(req[type]);
-                    }
-                }
-                root.url && root.send();
-            };
-        return function(ops) {
-            return new AJAX(ops);
-        }
-    }();
-    
-    
-    /*
-    getServicesFromAPI = function() {
-        ajaxRequest({
-            method: "GET",
-            url: this.api_endpoint + 'services?format=json',
-            headers: {
-                'User-Agent': 'LongURL Mobile Expander/' + this.script_version + ' (Greasemonkey)'
-            },
-            onload: function(response) {
-                saveSupportedServices(response);
-                //this.known_services = 
-                modifyShortLinks();
-            }
-        });
-    };
-    
-    
-    saveSupportedServices = function(response) {
-        var data = jsonToObject(response);
-        if (typeof(data.messages) !== 'undefined') { // There was an error
-            return;
-        }
-        this.known_services = data;
-        // Store the list of supported services locally
-        if (setValue('longurl_services', response.responseText)) {
-            alert('LongURL Mobile Expander requires Greasemokey 0.3 or higher.');
-        }
-        var date = new Date();
-        date.setTime(date.getTime() + (1000 * 60 * 60 * 24 * 1));
-        setValue('longurl_expire_services', date.toUTCString());
-    };
-    */
     
     modifyShortLinks = function() {
         var links = document.evaluate("//a[@href]", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -156,13 +33,14 @@
                     var url = e.target.href;
                     if(url == null)return;
                     if (url.indexOf("iapps.im/itunes/") != -1) {
-                        //expandLink(e.target, e);
+                        //expandLink_via_longurl(e.target, e);
                         expandHeaderLocation(e.target, e);
                     }
                 }, true);
                 a.addEventListener('mouseout', function(e) {
                     hideTooltip();
                 }, true);
+                return;
             }
             
             if (href.indexOf("sspai.com/dl/") != -1) {
@@ -170,7 +48,9 @@
                 if (null != sspai_url) {
                     a.href = sspai_url;
                 }
+                return;
             }
+
             if (href.indexOf("www.smzdm.com/URL/") != -1) {
                 a.addEventListener('mouseover', function(e) {
                     showTooltip();
@@ -183,6 +63,7 @@
                 a.addEventListener('mouseout', function(e) {
                     hideTooltip();
                 }, true);
+                return;
             }
         }
     };
@@ -277,7 +158,13 @@
         });
     }
     
-    expandLink = function(anchor, e) {
+    expandLink_via_longurl = function(anchor, e) {
+
+
+        // URL for the LongURL API
+        var api_endpoint = 'http://api.longurl.org/v2/';
+        var script_version = '2.0';
+
         if (typeof(anchor.href) === 'undefined') return;
         this.current_link = anchor.href;
         // Check cache
@@ -290,9 +177,9 @@
         if (enqueue(anchor.href)) {
             ajaxRequest({
                 method: "GET",
-                url: this.api_endpoint + 'expand?format=json&title=1&url=' + encodeURIComponent(anchor.href),
+                url: api_endpoint + 'expand?format=json&title=1&url=' + encodeURIComponent(anchor.href),
                 headers: {
-                    'User-Agent': 'LongURL Mobile Expander/' + this.script_version + ' (Greasemonkey)'
+                    'User-Agent': 'LongURL Mobile Expander/' + script_version + ' (Greasemonkey)'
                 },
                 onload: function(response) {
                     var data = jsonToObject(response);
@@ -321,18 +208,22 @@
             });
         }
     };
+
     getCurrent = function() {
         return this.current_link;
     };
+
     setCache = function(key, value) {
         this.link_cache[escape(key)] = value;
     };
+
     getCache = function(key) {
         if (typeof(this.link_cache[escape(key)]) !== 'undefined') {
             return this.link_cache[escape(key)];
         }
         return false;
     };
+
     enqueue = function(short_url) {
         if (typeof(this.ajax_queue[escape(short_url)]) === 'undefined') {
             this.ajax_queue[escape(short_url)] = true;
@@ -340,9 +231,11 @@
         }
         return false;
     };
+
     dequeue = function(short_url) {
         this.ajax_queue.splice(this.ajax_queue.indexOf(escape(short_url)), 1);
     };
+
     tooltip = function(text, e) {
         if (typeof(this.tooltip_node) === 'undefined') {
             // Create the tooltip element
@@ -381,15 +274,18 @@
             this.tooltip_node.style.left = (pos.x) + 'px';
         }
     };
+
     showTooltip = function() {
         clearTimeout(this.tooltip_timeout);
     };
+
     hideTooltip = function() {
         clearTimeout(this.tooltip_timeout);
         this.tooltip_timeout = setTimeout(function() {
             tooltip(false);
         }, 1000);
     };
+
     // cursorPosition written by Beau Hartshorne
     cursorPosition = function(e) {
             e = e || window.event;
@@ -406,9 +302,10 @@
             }
             return position;
         }
-        // Greasekit did away with the GM_* functions, so for
-        // compatability I have to use wrapper functions and
-        // implement alternative functionality.
+
+    // Greasekit did away with the GM_* functions, so for
+    // compatability I have to use wrapper functions and
+    // implement alternative functionality.
     setValue = function(key, value) {
         if (typeof(GM_setValue) !== 'undefined') {
             return GM_setValue(key, value);
@@ -416,6 +313,7 @@
             document.cookie = key + '=' + encodeURIComponent(value);
         }
     };
+
     getValue = function(key, default_val) {
         if (typeof(GM_getValue) !== 'undefined') {
             return GM_getValue(key, default_val);
@@ -432,6 +330,7 @@
             return default_val;
         }
     };
+
     ajaxRequest = function(details) {
         if (typeof(GM_xmlhttpRequest) !== 'undefined') {
             return GM_xmlhttpRequest(details);
@@ -442,6 +341,7 @@
             document.body.appendChild(script);
         }
     };
+
     jsonToObject = function(response) {
         if (typeof(response.responseText) === 'undefined') {
             return response;
@@ -449,6 +349,7 @@
             return eval('(' + response.responseText + ')');
         }
     };
+
     modifiedDOMCallback = function(e) {
         if (e.relatedNode.id === 'longurlme_tooltip') return;
         clearTimeout(this.tooltip_timeout);
@@ -456,18 +357,95 @@
             modifyShortLinks();
         }, 500);
     };
-    init = function() {
-        /*
-        var now = new Date();
-        var serialized_services = getValue('longurl_services', false);
-        var services_expire = Date.parse(getValue('longurl_expire_services', now.toUTCString()));
-        if (serialized_services && services_expire > now.getTime()) {
-            this.known_services = eval('(' + serialized_services + ')');
-            modifyShortLinks();
-        } else {
-            getServicesFromAPI();
+
+    /*
+     * Name: xhr,XmlHttpRequest AJAX封装函数
+     * Description: 一个ajax调用封装类,仿jquery的ajax调用方式
+     * Author:十年灯
+     * Url: http://jo2.org
+     */
+    xhr = function() {
+        var ajax = function() {
+                return ('XMLHttpRequest' in window) ? function() {
+                    return new XMLHttpRequest();
+                } : function() {
+                    return new ActiveXObject("Microsoft.XMLHTTP");
+                }
+            }(),
+            formatData = function(fd) {
+                var res = '';
+                for (var f in fd) {
+                    res += f + '=' + fd[f] + '&';
+                }
+                return res.slice(0, -1);
+            },
+            AJAX = function(ops) {
+                var root = this,
+                    req = ajax();
+                root.url = ops.url;
+                root.type = ops.type || 'responseText';
+                root.method = ops.method || 'GET';
+                root.async = ops.async || true;
+                root.data = ops.data || {};
+                root.complete = ops.complete || function() {};
+                root.success = ops.success || function() {};
+                root.error = ops.error || function(s) {
+                    alert(root.url + '->status:' + s + 'error!')
+                };
+                root.abort = req.abort;
+                root.setData = function(data) {
+                    for (var d in data) {
+                        root.data[d] = data[d];
+                    }
+                }
+                root.send = function() {
+                    var datastring = formatData(root.data),
+                        sendstring, get = false,
+                        async = root.async,
+                        complete = root.complete,
+                        method = root.method,
+                        type = root.type;
+                    if (method === 'GET') {
+                        if(datastring !=null){
+                            root.url += '?' + datastring;
+                        }
+                        get = true;
+                    }
+                    req.open(method, root.url, async);
+                    if (!get) {
+                        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        sendstring = datastring;
+                    }
+                    //在send之前重置onreadystatechange方法,否则会出现新的同步请求会执行两次成功回调(chrome等在同步请求时也会执行onreadystatechange)
+                    req.onreadystatechange = async ? function() {
+                        if (req.readyState == 4) {
+                            complete();
+                            if (req.status == 200) {
+                                if(root.type=='get_redirect_url'){
+                                    root.success(req.responseURL);
+                                }else{
+                                    root.success(req[type]);
+                                }
+                            } else {
+                                root.error(req.status);
+                            }
+                        }
+                    } : null;
+                    req.send(sendstring);
+                    if (!async) {
+                        complete();
+                        root.success(req[type]);
+                    }
+                }
+                root.url && root.send();
+            };
+        return function(ops) {
+            return new AJAX(ops);
         }
-        */
+    }();
+
+
+    init = function() {
         window.addEventListener('load', function(e) {
             if (typeof(document.body) === 'undefined') return;
             document.body.addEventListener('DOMNodeInserted', function(e) {
@@ -479,5 +457,6 @@
             }, false);
         }, true);
     };
+
     init();
 })();
