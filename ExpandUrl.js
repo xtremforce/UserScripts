@@ -404,7 +404,10 @@
     };
 
     modifiedDOMCallback = function(e) {
-        if (e.relatedNode.id === 'longurlme_tooltip') return;
+
+        if(typeof(e.relatedNode) !== 'undefined'){
+           if (e.relatedNode.id === 'longurlme_tooltip') return;
+        }
         clearTimeout(this.tooltip_timeout);
         this.tooltip_timeout = setTimeout(function() {
             modifyShortLinks();
@@ -521,6 +524,10 @@
         window.addEventListener('load', function(e) {
             if (typeof(document.body) === 'undefined') return;
 
+            modifiedDOMCallback(e);
+            document.body.addEventListener('DOMNodeInserted', modifiedDOMCallback, false);
+
+        /*
             //为不支持 DOMNodeInserted 的网站使用 animationstart 事件
             if(window.location.href.indexOf('mgpyh.com')>0){
                 document.body.addEventListener('animationstart',function(e) {
@@ -543,6 +550,8 @@
                     }, 500);
                 }, false);
             }
+
+            */
 
         }, true);
     };
