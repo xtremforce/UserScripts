@@ -43,7 +43,8 @@
                 }, true);
             }
 
-            if (href.indexOf("www.mgpyh.com/goods/") > 0) {
+            //www.mgpyh.com
+            if (href.indexOf("www.mgpyh.com/goods/") != -1) {
                 a.addEventListener('mouseover', function(e) {
                     showTooltip();
                     var url = e.target.href;
@@ -171,8 +172,6 @@
     }
     
     expand_via_longurl = function(anchor, e) {
-
-
         // URL for the LongURL API
         var api_endpoint = 'http://api.longurl.org/v2/';
         var script_version = '2.0';
@@ -457,16 +456,52 @@
     }();
 
 
+    //该函数是用 CSS Hack 代替 DOMNodeInserted 事件失效的问题
+    //详见：http://opengg.me/784/high-performance-domnodeinserted-hack/
+    //http://userscripts-mirror.org/scripts/review/119622
+    //
+    addAnimations = function() {
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = 'body{\
+            -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;\
+            -ms-animation-duration:.001s;-ms-animation-name:playerInserted;\
+            -o-animation-duration:.001s;-o-animation-name:playerInserted;\
+            animation-duration:.001s;animation-name:playerInserted;}\
+            @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+            @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+            @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+            @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}';
+        document.getElementsByTagName('head')[0].appendChild(style);
+    };
+
     init = function() {
         window.addEventListener('load', function(e) {
             if (typeof(document.body) === 'undefined') return;
-            document.body.addEventListener('DOMNodeInserted', function(e) {
-                if (e.relatedNode.id === 'longurlme_tooltip') return;
-                clearTimeout(this.tooltip_timeout);
-                this.tooltip_timeout = setTimeout(function() {
-                    modifyShortLinks();
-                }, 500);
-            }, false);
+
+            //为不支持 DOMNodeInserted 的网站使用 animationstart 事件
+            if(window.location.href.indexOf('mgpyh.com')>0){
+                document.body.addEventListener('animationstart',function(e) {
+                    if(document.getElementById('longurlme_tooltip')!=null)return;
+                    clearTimeout(this.tooltip_timeout);
+                    this.tooltip_timeout = setTimeout(function() {
+                        modifyShortLinks();
+                    }, 500);
+                }, false);
+
+                addAnimations();
+                
+            }else{
+
+                document.body.addEventListener('DOMNodeInserted', function(e) {
+                    if (e.relatedNode.id === 'longurlme_tooltip') return;
+                    clearTimeout(this.tooltip_timeout);
+                    this.tooltip_timeout = setTimeout(function() {
+                        modifyShortLinks();
+                    }, 500);
+                }, false);
+            }
+
         }, true);
     };
 
