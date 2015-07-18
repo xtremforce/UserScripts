@@ -2,18 +2,19 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.3
+// @version    0.1.4
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @include       *://*iapps.im/*
 // @include       *://sspai.com/*
 // @include       *://*.smzdm.com/*
+// @include       *://*.mgpyh.com/*
 // @author X-Force
 // ==/UserScript==
 
 
 (function() {
-    
+
     this.link_cache = [];
     this.ajax_queue = [];
     this.tooltip_node;
@@ -33,14 +34,27 @@
                     var url = e.target.href;
                     if(url == null)return;
                     if (url.indexOf("iapps.im/itunes/") != -1) {
-                        //expandLink_via_longurl(e.target, e);
-                        expandHeaderLocation(e.target, e);
+                        expand_via_longurl(e.target, e);
+                        //expandHeaderLocation(e.target, e);
                     }
                 }, true);
                 a.addEventListener('mouseout', function(e) {
                     hideTooltip();
                 }, true);
-                return;
+            }
+
+            if (href.indexOf("www.mgpyh.com/goods/") > 0) {
+                a.addEventListener('mouseover', function(e) {
+                    showTooltip();
+                    var url = e.target.href;
+                    if(url == null)return;
+                    if (url.indexOf("www.mgpyh.com/goods/") != -1) {
+                        expand_via_longurl(e.target, e);
+                    }
+                }, true);
+                a.addEventListener('mouseout', function(e) {
+                    hideTooltip();
+                }, true);
             }
             
             if (href.indexOf("sspai.com/dl/") != -1) {
@@ -48,7 +62,6 @@
                 if (null != sspai_url) {
                     a.href = sspai_url;
                 }
-                return;
             }
 
             if (href.indexOf("www.smzdm.com/URL/") != -1) {
@@ -63,7 +76,6 @@
                 a.addEventListener('mouseout', function(e) {
                     hideTooltip();
                 }, true);
-                return;
             }
         }
     };
@@ -158,7 +170,7 @@
         });
     }
     
-    expandLink_via_longurl = function(anchor, e) {
+    expand_via_longurl = function(anchor, e) {
 
 
         // URL for the LongURL API
