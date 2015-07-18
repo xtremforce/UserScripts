@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.5
+// @version    0.1.6
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @include       *://*iapps.im/*
@@ -46,11 +46,18 @@
             //www.mgpyh.com
             if (href.indexOf("www.mgpyh.com/goods/") != -1) {
                 a.addEventListener('mouseover', function(e) {
+                    
                     showTooltip();
                     var url = e.target.href;
-                    if(url == null)return;
+                    var obj = e.target;
+                    //mgpyh 文章里的链接有点特殊，之前的方法获取不成功，需要特殊处理一下
+                    if(url == null){
+                        obj = e.target.parentElement;
+                        url = obj.href;
+                    }
+                    if(url==null) return;
                     if (url.indexOf("www.mgpyh.com/goods/") != -1) {
-                        expandLink(e.target, e);
+                        expandLink(obj, e);
                     }
                 }, true);
                 a.addEventListener('mouseout', function(e) {
@@ -62,6 +69,18 @@
                 var sspai_url = a.getAttribute('data-orgurl');
                 if (null != sspai_url) {
                     a.href = sspai_url;
+                }else{
+                    a.addEventListener('mouseover', function(e) {
+                        showTooltip();
+                        var url = e.target.href;
+                        if(url == null)return;
+                        if (url.indexOf("sspai.com/dl/") != -1) {
+                            expandLink(e.target, e);
+                        }
+                    }, true);
+                    a.addEventListener('mouseout', function(e) {
+                        hideTooltip();
+                    }, true);
                 }
             }
 
@@ -93,7 +112,7 @@
             anchor.href = getCache(anchor.href);
             return;
         }
-        tooltip('Expanding...', e);
+        tooltip('链接解析中...', e);
         if (enqueue(anchor.href)) {
             ajaxRequest({
                 method: "POST",
