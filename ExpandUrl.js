@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name       ExpandUrl
-// @namespace  http://www.iplaysoft.com
-// @version    0.1
 // @description  Expand URLs
+// @namespace  http://www.iplaysoft.com
+// @version    0.1.1
+// @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
+// @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @include       *://*iapps.im/*
 // @include       *://sspai.com/*
 // @include       *://*.smzdm.com/*
-// @copyright  X-Force
+// @author X-Force
 // ==/UserScript==
 
 
