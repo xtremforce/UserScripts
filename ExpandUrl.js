@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.8
+// @version    0.1.9
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @match       *://*.iapps.im/*
@@ -541,10 +541,12 @@
         }
         if( url.indexOf('://www.amazon.cn/')>1){
             url = updateParameter(url,'tag','xforce');
+            url = updateParameter(url,'t','');
             return url;
         }
         if( url.indexOf('://www.amazon.com/')>1){
             url = updateParameter(url,'tag','ipla-20');
+            url = updateParameter(url,'t','');
             return url;
         }
         return url;
