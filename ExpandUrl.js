@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.4
+// @version    0.1.5
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @include       *://*iapps.im/*
@@ -34,7 +34,7 @@
                     var url = e.target.href;
                     if(url == null)return;
                     if (url.indexOf("iapps.im/itunes/") != -1) {
-                        expand_via_longurl(e.target, e);
+                        expandLink(e.target, e);
                         //expandHeaderLocation(e.target, e);
                     }
                 }, true);
@@ -50,7 +50,7 @@
                     var url = e.target.href;
                     if(url == null)return;
                     if (url.indexOf("www.mgpyh.com/goods/") != -1) {
-                        expand_via_longurl(e.target, e);
+                        expandLink(e.target, e);
                     }
                 }, true);
                 a.addEventListener('mouseout', function(e) {
@@ -81,6 +81,48 @@
         }
     };
     
+    expandLink = function(anchor, e) {
+        // URL for the API
+        var api = 'http://xforce.sinaapp.com/expandurl.php';
+
+        if (typeof(anchor.href) === 'undefined') return;
+        this.current_link = anchor.href;
+        // Check cache
+        if (getCache(anchor.href) !== false) {
+            tooltip(getCache(anchor.href), e);
+            anchor.href = getCache(anchor.href);
+            return;
+        }
+        tooltip('Expanding...', e);
+        if (enqueue(anchor.href)) {
+            ajaxRequest({
+                method: "POST",
+                url: api,
+                data:'url='+anchor.href,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                onload: function(response) {
+                    
+                    var data = jsonToObject(response);
+                    
+                    if(data!=null && data['redirect']!=null ){
+                        var result = data['redirect'];
+                        setCache(anchor.href, result);
+                    }
+                    
+                    //Remove from queue
+                    dequeue(anchor.href);
+                    // Make sure user is still hovering over this link before updating tooltip
+                    if (getCurrent() === anchor.href) {
+                        tooltip(getCache(anchor.href));
+                    }
+                    anchor.href = data['redirect'];
+                }
+            });
+        }
+    };
+
     
     expandHeaderLocation = function(anchor,e){
         if (typeof(anchor.href) === 'undefined') return;
@@ -490,7 +532,7 @@
                 }, false);
 
                 addAnimations();
-                
+
             }else{
 
                 document.body.addEventListener('DOMNodeInserted', function(e) {
