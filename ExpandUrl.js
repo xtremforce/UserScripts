@@ -2,13 +2,13 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.6
+// @version    0.1.7
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
-// @include       *://*iapps.im/*
-// @include       *://sspai.com/*
-// @include       *://*.smzdm.com/*
-// @include       *://*.mgpyh.com/*
+// @match       *://*iapps.im/*
+// @match       *://sspai.com/*
+// @match       *://*.smzdm.com/*
+// @match       *://*.mgpyh.com/*
 // @author X-Force
 // ==/UserScript==
 
@@ -126,6 +126,9 @@
                     var data = jsonToObject(response);
                     
                     if(data!=null && data['redirect']!=null ){
+
+                        data['redirect'] = processUrl(data['redirect']);
+
                         var result = data['redirect'];
                         setCache(anchor.href, result);
                     }
@@ -519,6 +522,23 @@
         }
     }();
 
+    updateParameter = function(uri, key, value) {
+      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+      if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
+      }
+      else {
+        return uri + separator + key + "=" + value;
+      }
+    }
+
+    processUrl = function (url){
+        if( url.indexOf('//itunes.apple.com/')>1){
+            url = updateParameter(url,'at','10laHZ');
+        }
+        return url;
+    }
 
     //该函数是用 CSS Hack 代替 DOMNodeInserted 事件失效的问题
     //详见：http://opengg.me/784/high-performance-domnodeinserted-hack/
