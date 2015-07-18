@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.10
+// @version    0.2
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @match       *://*.iapps.im/*
@@ -529,10 +529,16 @@
       if (uri.match(re)) {
           var newUrl = uri.replace(re, '$1' + key + "=" + value + '$2');
           //如果参数值为 null 则删除参数
+          /*
+          //TODO:!!!!
           if(value===null){
-              newUrl=newUrl.replace("&"+key+"=","");
-              newUrl=newUrl.replace("?"+key+"=","");
+              if(newUrl.indexOf('&')==false){
+                newUrl=newUrl.replace("?"+key+"=null","");
+              }else{
+                newUrl=newUrl.replace("&"+key+"=","");
+              }
           }
+          */
           return newUrl;
       }
       else {
