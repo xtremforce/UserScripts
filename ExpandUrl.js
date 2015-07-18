@@ -25,7 +25,7 @@
     this.current_link;
     
     /*
-     * Name: xhr,AJAX封装函数
+     * Name: xhr,XmlHttpRequest AJAX封装函数
      * Description: 一个ajax调用封装类,仿jquery的ajax调用方式
      * Author:十年灯
      * Url: http://jo2.org
@@ -111,7 +111,7 @@
     }();
     
     
-    
+    /*
     getServicesFromAPI = function() {
         ajaxRequest({
             method: "GET",
@@ -142,7 +142,7 @@
         date.setTime(date.getTime() + (1000 * 60 * 60 * 24 * 1));
         setValue('longurl_expire_services', date.toUTCString());
     };
-    
+    */
     
     modifyShortLinks = function() {
         var links = document.evaluate("//a[@href]", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -457,6 +457,7 @@
         }, 500);
     };
     init = function() {
+        /*
         var now = new Date();
         var serialized_services = getValue('longurl_services', false);
         var services_expire = Date.parse(getValue('longurl_expire_services', now.toUTCString()));
@@ -466,6 +467,7 @@
         } else {
             getServicesFromAPI();
         }
+        */
         window.addEventListener('load', function(e) {
             if (typeof(document.body) === 'undefined') return;
             document.body.addEventListener('DOMNodeInserted', function(e) {
