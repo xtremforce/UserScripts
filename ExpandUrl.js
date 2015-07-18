@@ -2,10 +2,10 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.7
+// @version    0.1.8
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
-// @match       *://*iapps.im/*
+// @match       *://*.iapps.im/*
 // @match       *://sspai.com/*
 // @match       *://*.smzdm.com/*
 // @match       *://*.mgpyh.com/*
@@ -68,7 +68,7 @@
             if (href.indexOf("sspai.com/dl/") != -1) {
                 var sspai_url = a.getAttribute('data-orgurl');
                 if (null != sspai_url) {
-                    a.href = sspai_url;
+                    a.href = processUrl(sspai_url);
                 }else{
                     a.addEventListener('mouseover', function(e) {
                         showTooltip();
@@ -155,7 +155,7 @@
             anchor.href = getCache(anchor.href);
             return;
         }
-        tooltip('Expanding...', e);
+        tooltip('链接解析中...', e);
         
         var url = (anchor.href);
         var response = xhr({
@@ -190,7 +190,7 @@
             anchor.href = getCache(anchor.href);
             return;
         }
-        tooltip('Expanding...', e);
+        tooltip('链接解析中...', e);
         
         var url = (anchor.href);
         var response = xhr({
@@ -217,6 +217,7 @@
                         var matches = regExp.exec(decodedString);
                         if(matches!=null){
                             targetUrl = matches[1];
+                            targetUrl = processUrl(targetUrl);
                             
                             setCache(anchor.href, targetUrl);
                             //Remove from queue
@@ -534,8 +535,17 @@
     }
 
     processUrl = function (url){
-        if( url.indexOf('//itunes.apple.com/')>1){
+        if( url.indexOf('://itunes.apple.com/')>1){
             url = updateParameter(url,'at','10laHZ');
+            return url;
+        }
+        if( url.indexOf('://www.amazon.cn/')>1){
+            url = updateParameter(url,'tag','xforce');
+            return url;
+        }
+        if( url.indexOf('://www.amazon.com/')>1){
+            url = updateParameter(url,'tag','ipla-20');
+            return url;
         }
         return url;
     }
