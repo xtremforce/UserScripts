@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.9
+// @version    0.1.10
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @match       *://*.iapps.im/*
@@ -523,30 +523,36 @@
         }
     }();
 
-    updateParameter = function(uri, key, value) {
+    changeUrlParameter = function(uri, key, value) {
       var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
       var separator = uri.indexOf('?') !== -1 ? "&" : "?";
       if (uri.match(re)) {
-        return uri.replace(re, '$1' + key + "=" + value + '$2');
+          var newUrl = uri.replace(re, '$1' + key + "=" + value + '$2');
+          //如果参数值为 null 则删除参数
+          if(value===null){
+              newUrl=newUrl.replace("&"+key+"=","");
+              newUrl=newUrl.replace("?"+key+"=","");
+          }
+          return newUrl;
       }
       else {
         return uri + separator + key + "=" + value;
       }
     }
-
+    
     processUrl = function (url){
         if( url.indexOf('://itunes.apple.com/')>1){
-            url = updateParameter(url,'at','10laHZ');
+            url = changeUrlParameter(url,'at','10laHZ');
             return url;
         }
         if( url.indexOf('://www.amazon.cn/')>1){
-            url = updateParameter(url,'tag','xforce');
-            url = updateParameter(url,'t','');
+            url = changeUrlParameter(url,'tag','xforce');
+            url = changeUrlParameter(url,'t',null);
             return url;
         }
         if( url.indexOf('://www.amazon.com/')>1){
-            url = updateParameter(url,'tag','ipla-20');
-            url = updateParameter(url,'t','');
+            url = changeUrlParameter(url,'tag','ipla-20');
+            url = changeUrlParameter(url,'t',null);
             return url;
         }
         return url;
