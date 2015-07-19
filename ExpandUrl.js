@@ -2,7 +2,7 @@
 // @name       ExpandUrl
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.2
+// @version    0.2.1
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @match       *://*.iapps.im/*
@@ -523,43 +523,24 @@
         }
     }();
 
-    changeUrlParameter = function(uri, key, value) {
-      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-      if (uri.match(re)) {
-          var newUrl = uri.replace(re, '$1' + key + "=" + value + '$2');
-          //如果参数值为 null 则删除参数
-          /*
-          //TODO:!!!!
-          if(value===null){
-              if(newUrl.indexOf('&')==false){
-                newUrl=newUrl.replace("?"+key+"=null","");
-              }else{
-                newUrl=newUrl.replace("&"+key+"=","");
-              }
-          }
-          */
-          return newUrl;
-      }
-      else {
-        return uri + separator + key + "=" + value;
-      }
-    }
+    UrlManager=function(a){var b=this;return b.state={},b.baseurl="",b.readUrl=function(a){var c={},d=a.split("?");b.baseurl=d[0];var e=d[1];if(void 0!=e&&e.length){e=e.replace(/#$/,""),e=e.split("&");for(var f=0;f<e.length;f++){pair=e[f].split("=");var g=pair[0],h=decodeURIComponent(pair[1]);"undefined"!=typeof g&&"undefined"!=typeof h&&(g.match(/\[\]$/)?(c[g]||(c[g]={}),c[g][h]=1):c[g]=h)}b.state=c}},b.setParam=function(a,c){return a.match(/\[\]$/)?(b.state[a]||(b.state[a]={}),b.state[a][c]=1):b.state[a]=c,b.getUrl()},b.removeParam=function(a,c){return a.match(/\[\]$/)?b.state[a]&&b.state[a][c]&&delete b.state[a][c]:delete b.state[a],b.getUrl()},b.clearParam=function(a){return delete b.state[a],b.getUrl()},b.getParams=function(){return b.state},b.getParam=function(a){if(!a.match(/\[\]$/))return b.state[a];var c=[];if(b.state[a]){for(key in b.state[a])c.push(key);return c}},b.getQueryString=function(){var a=[];for(var c in b.state)if("[object Object]"==Object.prototype.toString.call(b.state[c]))for(var d in b.state[c])a.push(c+"="+encodeURIComponent(d));else a.push(c+"="+encodeURIComponent(b.state[c]));return a.join("&")},b.getUrl=function(){var a=b.getQueryString();return b.baseurl+(null==a?"":"?")+a},b.getBaseUrl=function(){return b.baseurl},null!=a&&b.readUrl(a),b};
     
     processUrl = function (url){
+        
+        var urlObj = UrlManager(url);
+        
         if( url.indexOf('://itunes.apple.com/')>1){
-            url = changeUrlParameter(url,'at','10laHZ');
-            return url;
+            return urlObj.setParam('at','10laHZ');
         }
         if( url.indexOf('://www.amazon.cn/')>1){
-            url = changeUrlParameter(url,'tag','xforce');
-            url = changeUrlParameter(url,'t',null);
-            return url;
+            urlObj.setParam('tag','xforce');
+            urlObj.removeParam('t');
+            return urlObj.getUrl();
         }
         if( url.indexOf('://www.amazon.com/')>1){
-            url = changeUrlParameter(url,'tag','ipla-20');
-            url = changeUrlParameter(url,'t',null);
-            return url;
+            urlObj.setParam('tag','ipla-20');
+            urlObj.removeParam('t');
+            return urlObj.getUrl();
         }
         return url;
     }
