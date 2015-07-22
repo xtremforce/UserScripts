@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name       Better JD Search
+// @name       Better JD Search by X-Force
 // @namespace  http://www.iplaysoft.com
-// @version    0.1
+// @version    0.1.1
 // @description  Better JD Search
 // @author X-Force
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/JDSearch.js

@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name       No Lazy Load
+// @name       No Lazy Load by X-Force
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.1
+// @version    0.1.2
 // @description  Disable images Lazy Load
 // @match    *://*.jd.com/*
 // @match    *://*.taobao.com/*
@@ -50,7 +50,7 @@
         }
 
         if (url.indexOf(".taobao.com/") != -1 || url.indexOf(".tmall.com/") != -1) {
-            removeLazy(img, "data-ks-lazyload"); //京东
+            removeLazy(img, "data-ks-lazyload"); 
             return;
         }
 
