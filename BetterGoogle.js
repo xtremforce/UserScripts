@@ -1,14 +1,16 @@
 // ==UserScript==
 // @name          Better Google by X-Force
-// @version       0.2.1
+// @version       0.2.3
 // @namespace     http://www.iplaysoft.com/
 // @description   Keep Google Search Box on Top
-// @include    *//www.google.com/*
+// @include    *//www.google.*/*
 // @require       http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/BetterGoogle.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/BetterGoogle.js
 // ==/UserScript==
 
+
+if(window.location.href.indexOf("q=")==-1){return;}
 
 //============================
 // float Google Search box
@@ -75,6 +77,7 @@ if($(imageSearchBoxId).length>0){
 //==========================
 
 
+    
 if(window.location.href.indexOf("tbm=isch")>0){
     
     //要等待列表加载完成才能移除
@@ -87,6 +90,7 @@ if(window.location.href.indexOf("tbm=isch")>0){
 
 function rmGoogleRedirect() {
     //网页搜索
+    console.debug('rmGoogleRedirect');
     $('h3.r a').unbind('mousedown').removeAttr('onmousedown');
     //links.href=links.attr('data-href');
     $('#resultStats').append('<a style="color:#6DA70F" target="_blank" href="http://www.iplaysoft.com">转向已移除</a>');
@@ -94,6 +98,7 @@ function rmGoogleRedirect() {
 }
 
 function rmGoogleImageRedirect(){
+    console.debug('rmGoogleImageRedirect');
     //图片搜索
     $('table.irc_but_r tr td a,div.irc_mic div a,div._LAd a.irc_tas').removeAttr('jsaction');
     $('.irc_sbl').append('&nbsp;&nbsp;<a style="color:#6DA70F;text-decoration:none" target="_blank" href="http://www.iplaysoft.com">转向已移除</a>');
