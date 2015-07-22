@@ -9,7 +9,6 @@
 // @match    *://*.iapps.im/*
 // @match    *://*.weixin.qq.com/*
 // @match    *://blog.sina.com.cn/*
-// @match    *://*.youtube.com/*
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/NoLazyLoad.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/NoLazyLoad.js
 // @run-at     document-end
@@ -56,12 +55,6 @@
 
         if (url.indexOf(".weixin.qq.com/") != -1) {
             removeLazy(img, "data-src"); //微信
-            return;
-        }
-
-        //youtube
-        if (url.indexOf(".youtube.com/") != -1) {
-            removeLazy(img, "data-thumb");
             return;
         }
 
