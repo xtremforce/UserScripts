@@ -1,11 +1,15 @@
 // ==UserScript==
 // @name       No Lazy Load
 // @namespace  http://www.iplaysoft.com
-// @version    0.1
+// @version    0.1.1
 // @description  Disable images Lazy Load
+// @match    *://*.jd.com/*
+// @match    *://*.taobao.com/*
+// @match    *://*.tmall.com/*
 // @match    *://*.iapps.im/*
 // @match    *://*.weixin.qq.com/*
-// @match    *://*.jd.com/*
+// @match    *://blog.sina.com.cn/*
+// @match    *://*.youtube.com/*
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/NoLazyLoad.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/NoLazyLoad.js
 // @run-at     document-end
@@ -39,15 +43,34 @@
     function removeLazyloadProcess(img) {
 
         var url = window.location.href;
+
         if (url.indexOf(".jd.com/") != -1) {
             removeLazy(img, "data-lazyload"); //京东
             return;
         }
 
-        if (url.indexOf("weixin.qq.com/") != -1) {
+        if (url.indexOf(".taobao.com/") != -1 || url.indexOf(".tmall.com/") != -1) {
+            removeLazy(img, "data-ks-lazyload"); //京东
+            return;
+        }
+
+        if (url.indexOf(".weixin.qq.com/") != -1) {
             removeLazy(img, "data-src"); //微信
             return;
         }
+
+        //youtube
+        if (url.indexOf(".youtube.com/") != -1) {
+            removeLazy(img, "data-thumb");
+            return;
+        }
+
+        //sina_blog
+        if (url.indexOf("://blog.sina.com.cn/") != -1) {
+            removeLazy(img, "data-thumb");
+            return;
+        }
+
 
         //通用  
         removeLazy(img, "data-lazy-src");
