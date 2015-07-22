@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       No Lazy Load by X-Force
 // @namespace  http://www.iplaysoft.com
-// @version    0.1.2
+// @version    0.1.3
 // @description  Disable images Lazy Load
 // @match    *://*.jd.com/*
 // @match    *://*.taobao.com/*
