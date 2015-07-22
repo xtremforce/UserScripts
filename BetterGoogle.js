@@ -1,16 +1,12 @@
 // ==UserScript==
 // @name          Better Google by X-Force
-// @version       0.11.3
+// @version       0.2.1
 // @namespace     http://www.iplaysoft.com/
 // @description   Keep Google Search Box on Top
-// @include       *://*.google.*/search*
-// @include       *://*.google.*/*q=*
-// @include       *://*.google.*/webhp*
-// @exclude       *://mail.google.com/*
-// @require       //upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js
+// @include    *//www.google.com/*
+// @require       http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/BetterGoogle.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/BetterGoogle.js
-// @grant         none
 // ==/UserScript==
 
 
@@ -77,87 +73,32 @@ if($(imageSearchBoxId).length>0){
 //==========================
 //   Remove Google redirect
 //==========================
-//source: https://chrome.google.com/webstore/detail/%E6%90%9C%E7%B4%A2%E7%9B%B4%E8%BE%BE/mkpejojlockjoldbdbbgbibeogmemjfk
-
-var timerLoopTimes = 10
-
-var timerForGoogleSearch;
-var timerForGoogleSearchLoopTimes = 0
-var timerForGoogleSearchInterval = 2000
-
-CURRENT_URL = window.location.href;
-
-setTimeout(rmGoogleRedirect,800)
-setTimeout(rmGoogleRedirect,1200)
-setTimeout(rmGoogleRedirect,1600)
-timerForGoogleSearch = self.setInterval("rmGoogleRedirect()",timerForGoogleSearchInterval)
-
-function rmGoogleRedirect() {
-    links_web =         document.querySelectorAll('h3.r a[href][onmousedown]')
-    links_news_in_web = document.querySelectorAll("#rso a[href][onmousedown]")
-    links_img_title =   document.querySelectorAll("._LAd a[href^='http']")
-    links_img_btns  =   document.querySelectorAll(".irc_butc a")
-    links = []
-
-    $.each(links_news_in_web, function(index, item){
-        links.push(item);
-    })
-    $.each(links_web, function(index, item){
-        links.push(item);
-    })
-    $.each(links_img_title, function(index, item){
-        links.push(item);
-    })
-    $.each(links_img_btns, function(index, item){
-        links.push(item);
-    })
 
 
-    if(links.length > 0) {
-        for(var i = 0; i < links.length; i++) {
-            var tmpLink = links[i]
-            tmpLink.target = "_blank"
-            if(tmpLink.removeAttribute){
-                tmpLink.removeAttribute("onmousedown")
-                // tmpLink.style.color = "red";
-                newLink = tmpLink.cloneNode(true)
-                if(tmpLink.parentNode != null) {
-                    tmpLink.parentNode.replaceChild(newLink, tmpLink)   
-                }
-                
-            }
-        }
-    } 
-
-    //web+news
-    tipsDiv = document.querySelector("#resultStats")
+if(window.location.href.indexOf("tbm=isch")>0){
     
-    if(tipsDiv != null && $(".tipsLabel").length == 0) {
-        var tipsLabel = document.createElement('label'); 
-        tipsLabel.setAttribute("style", "color:green")
-        tipsLabel.setAttribute("class", "tipsLabel")
-        tipsLabel.textContent = "转向已去除"
-        tipsDiv.appendChild(tipsLabel);
-    } 
-    
+    //要等待列表加载完成才能移除
+    waitForKeyElements("#irc_cc", rmGoogleImageRedirect);
 
-    // img
-    if(links_img_title.length > 0) {
-        tipsTr = document.querySelectorAll(".irc_butc tr")
-        for(i =0; i < tipsTr.length; i++) {
-            if ($(tipsTr[i]).find(".tipsLabel").length > 0) {continue};
-            var tipsLabel = document.createElement('td'); 
-            tipsLabel.setAttribute("style", "color:#6E6E6E")
-            tipsLabel.setAttribute("class", "tipsLabel")
-            tipsLabel.textContent = "转向已去除"
-            tipsTr[i].appendChild(tipsLabel);   
-        }
-    } 
+}else{
+    waitForKeyElements("#ires", rmGoogleRedirect);
 }
 
 
+function rmGoogleRedirect() {
+    //网页搜索
+    $('h3.r a').unbind('mousedown').removeAttr('onmousedown');
+    //links.href=links.attr('data-href');
+    $('#resultStats').append('<a style="color:#6DA70F" target="_blank" href="http://www.iplaysoft.com">转向已移除</a>');
+    
+}
 
-
+function rmGoogleImageRedirect(){
+    //图片搜索
+    $('table.irc_but_r tr td a,div.irc_mic div a,div._LAd a.irc_tas').removeAttr('jsaction');
+    $('.irc_sbl').append('&nbsp;&nbsp;<a style="color:#6DA70F;text-decoration:none" target="_blank" href="http://www.iplaysoft.com">转向已移除</a>');
+    
+}
 
 
 //以前的方法
