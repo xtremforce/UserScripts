@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       Remove Ads by X-Force
 // @namespace   http://www.iplaysoft.com/
-// @version    0.13
+// @version    0.131
 // @description  Remove Gmail Ads
 // @match      https://mail.google.com/mail/*
 // @match      http://weibo.com/*
