@@ -2,13 +2,14 @@
 // @name       ExpandUrl by X-Force
 // @description  Expand URLs
 // @namespace  http://www.iplaysoft.com
-// @version    0.2.3
+// @version    0.2.5
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/ExpandUrl.js
 // @match       *://*.iapps.im/*
 // @match       *://sspai.com/*
 // @match       *://*.smzdm.com/*
 // @match       *://*.mgpyh.com/*
+// @grant GM_xmlhttpRequest
 // @author X-Force
 // ==/UserScript==
 
@@ -90,7 +91,7 @@
                     var url = e.target.href;
                     if(url == null)return;
                     if (url.indexOf("//go.smzdm.com/") != -1) {
-                        expandSMZDM(e.target,e);
+                        expandLink(e.target,e);
                     }
                 }, true);
                 a.addEventListener('mouseout', function(e) {
@@ -122,7 +123,6 @@
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 onload: function(response) {
-                    
                     var data = jsonToObject(response);
                     
                     if(data!=null && data['redirect']!=null ){
@@ -131,7 +131,38 @@
 
                         var result = data['redirect'];
                         setCache(anchor.href, result);
+                    }else{
+                        if(data['packer']!=null){
+                            //console.debug(data['packer']);
+                            //解密 packer
+                            eval("var decodedString=String" + data['packer'].slice(4));
+                            //console.debug(decodedString);
+                            
+                            //获取真实 URL
+                            if(decodedString.indexOf("smzdmhref") != -1){
+                                var regExp = new RegExp("smzdmhref='(.+)';","g");
+                                var matches = regExp.exec(decodedString);
+                                if(matches!=null){
+                                    var result = processUrl(matches[1]);
+                                    data['redirect'] = result;
+                                    setCache(anchor.href, result);
+                                }
+                            }
+                        }
                     }
+                    
+                    /*else if(response.responseText.indexOf("window.location.href") != -1){
+                        var responseStr = response.responseText.replace(/\\/g,"");
+                        var locationhref = responseStr.match(/window\.location\.href\s*=\s*"(.+?)"/);
+                        if(locationhref != null){
+                            console.debug(locationhref[1]);
+                            var result = processUrl(locationhref[1]);
+                             console.debug(result);
+                            setCache(anchor.href, result);
+                        }
+
+                    }*/
+                    
                     
                     //Remove from queue
                     dequeue(anchor.href);
@@ -181,6 +212,8 @@
         });
     }
     
+    //这函数已经不用了
+    /*
     expandSMZDM = function(anchor,e){
         if (typeof(anchor.href) === 'undefined') return;
         this.current_link = anchor.href;
@@ -235,6 +268,7 @@
             }
         });
     }
+    */
     
     expand_via_longurl = function(anchor, e) {
         // URL for the LongURL API
