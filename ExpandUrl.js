@@ -84,12 +84,12 @@
                 }
             }
 
-            if (href.indexOf("www.smzdm.com/URL/") != -1) {
+            if (href.indexOf("//go.smzdm.com/") != -1) {
                 a.addEventListener('mouseover', function(e) {
                     showTooltip();
                     var url = e.target.href;
                     if(url == null)return;
-                    if (url.indexOf("www.smzdm.com/URL/") != -1) {
+                    if (url.indexOf("//go.smzdm.com/") != -1) {
                         expandSMZDM(e.target,e);
                     }
                 }, true);
@@ -102,7 +102,7 @@
     
     expandLink = function(anchor, e) {
         // URL for the API
-        var api = 'http://xforce.sinaapp.com/expandurl.php';
+        var api = 'http://woo.im/expandurl.php';
 
         if (typeof(anchor.href) === 'undefined') return;
         this.current_link = anchor.href;
