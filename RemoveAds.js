@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name       Remove Ads by X-Force
 // @namespace   http://www.iplaysoft.com/
-// @version    0.14
-// @description  Remove Website Ads
+// @version    0.15
+// @description  Remove Ads
 // @match      https://mail.google.com/mail/*
 // @match      http://weibo.com/*
 // @match      http://www.cnbeta.com/*
 // @match      https://pixabay.com/*
+// @match      http://www.ithome.com/*
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
 // @grant GM_addStyle
@@ -51,5 +52,13 @@
     
     if(window.location.href.indexOf('//pixabay.com/')>2){
         GM_addStyle(".open_preview_img { visibility:hidden; }");
+    }
+    
+    if(window.location.href.indexOf('www.ithome.com/')>2){
+        GM_addStyle("li.cate_top,#hd_float,#side_func,#crf1,div.bx {display:none;}");
+        GM_addStyle("#wrapper .content .block h2{padding: 10px 0 20px 0;font-size: 19px;}");
+        if(window.location.href.indexOf('www.ithome.com/html/')>2){
+            GM_addStyle("div.con-recom,div.related_buy,.shareto {display:none;}");
+        }
     }
 })();
