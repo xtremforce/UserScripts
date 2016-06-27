@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name       Remove Ads by X-Force
 // @namespace   http://www.iplaysoft.com/
-// @version    0.15
-// @description  Remove Ads
+// @version    1.0
+// @description  Remove Gmail Ads
 // @match      https://mail.google.com/mail/*
 // @match      http://weibo.com/*
 // @match      http://www.cnbeta.com/*
 // @match      https://pixabay.com/*
 // @match      http://www.ithome.com/*
+// @match      http://v.youku.com/*
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
 // @grant GM_addStyle
@@ -18,6 +19,12 @@
 (function() {
     if (window.top != window.self)  //don't run on frames or iframes
         return;
+    
+    if(window.location.href.indexOf('//v.youku.com')>2){
+        GM_addStyle("#playBox,#playerBox,#player{width:1190px;height:710px}");
+        GM_addStyle("html iframe{display:none}");
+        return;
+    }
 
     if(window.location.href.indexOf('//mail.google.com/mail/')>2){
         //右侧和底部
@@ -52,6 +59,7 @@
     
     if(window.location.href.indexOf('//pixabay.com/')>2){
         GM_addStyle(".open_preview_img { visibility:hidden; }");
+        return;
     }
     
     if(window.location.href.indexOf('www.ithome.com/')>2){
@@ -60,5 +68,6 @@
         if(window.location.href.indexOf('www.ithome.com/html/')>2){
             GM_addStyle("div.con-recom,div.related_buy,.shareto {display:none;}");
         }
+        return;
     }
 })();
