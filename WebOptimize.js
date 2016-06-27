@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name       Remove Ads by X-Force
+// @name       WebOptimize by X-Force
 // @namespace   http://www.iplaysoft.com/
 // @version    0.1
-// @description  Remove Gmail Ads
+// @description WebOptimize
 // @match      https://mail.google.com/mail/*
 // @match      http://weibo.com/*
 // @match      http://www.cnbeta.com/*
@@ -11,8 +11,8 @@
 // @match      http://v.youku.com/*
 // @match      http://www.miaopai.com/*
 // @match      http://www.tudou.com/*
-// @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
-// @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
+// @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/WebOptimize.js
+// @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/WebOptimize.js
 // @grant GM_addStyle
 // @copyright  X-Force
 // ==/UserScript==
