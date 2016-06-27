@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       Remove Ads by X-Force
 // @namespace   http://www.iplaysoft.com/
-// @version    1.0
+// @version    0.1
 // @description  Remove Gmail Ads
 // @match      https://mail.google.com/mail/*
 // @match      http://weibo.com/*
@@ -9,6 +9,8 @@
 // @match      https://pixabay.com/*
 // @match      http://www.ithome.com/*
 // @match      http://v.youku.com/*
+// @match      http://www.miaopai.com/*
+// @match      http://www.tudou.com/*
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
 // @updateURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/RemoveAds.js
 // @grant GM_addStyle
@@ -25,6 +27,21 @@
         GM_addStyle("html iframe{display:none}");
         return;
     }
+    
+    if(window.location.href.indexOf('//www.miaopai.com/')>2){
+        GM_addStyle(".header_big{margin-bottom:710px;}.D_video{position:relative;}");
+        GM_addStyle(".D_video,.video_flash,.video_img{width:1000px !important;height:700px !important;}");
+        GM_addStyle(".video_flash,.video_img{position:absolute;top:-740px}");
+        return;
+    }
+    
+    if(window.location.href.indexOf('//www.tudou.com/')>2){
+        GM_addStyle("#player,.player_box,.player_main{width:1120px !important;height:724px !important;}");
+        GM_addStyle("html iframe{display:none}");
+        return;
+    }
+    
+    
 
     if(window.location.href.indexOf('//mail.google.com/mail/')>2){
         //右侧和底部
@@ -38,6 +55,13 @@
 
 
     if(window.location.href.indexOf('//weibo.com/')>2){
+        
+        //秒拍视频
+        if(window.location.href.indexOf('//weibo.com/p/')>2){
+            GM_addStyle(".WB_main{margin-top:620px}.WB_innerwrap{position:relative} ");
+            GM_addStyle(".video_box{width:918px;height:600px;position:absolute;top:-620px;left:0} .video_box embed{height:600px}");
+        }
+        
         //weibo
         //广告
         GM_addStyle("#v6_pl_content_biztips,#pl_content_biztips,#v6_pl_rightmod_ads36,#pl_rightmod_ads36,#v6_pl_rightmod_ads35,#v6_pl_ad_bottomtip,.adver_contB,.footer_adv,#v6_pl_rightmod_noticeboard { display:none; }");
