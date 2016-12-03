@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name       WebOptimize by X-Force
 // @namespace   http://www.iplaysoft.com/
-// @version    0.1
+// @version    0.2
 // @description WebOptimize
 // @match      https://mail.google.com/mail/*
 // @match      http://weibo.com/*
 // @match      http://www.cnbeta.com/*
 // @match      https://pixabay.com/*
 // @match      http://www.ithome.com/*
-// @match      http://v.youku.com/*
+// @match      http://*.youku.com/*
 // @match      http://www.miaopai.com/*
 // @match      http://www.tudou.com/*
 // @downloadURL https://raw.githubusercontent.com/xtremforce/UserScripts/master/WebOptimize.js
@@ -22,15 +22,16 @@
     if (window.top != window.self)  //don't run on frames or iframes
         return;
     
-    if(window.location.href.indexOf('//v.youku.com')>2){
-        GM_addStyle("#playBox,#playerBox,#player{width:1190px;height:710px}");
+    if(window.location.href.indexOf('//v.youku.com')>2 || window.location.href.indexOf('//v-wb.youku.com')>2){
+        GM_addStyle("#playBox,#playerBox,#player{width:1186px;height:770px;padding-bottom:100px;}#player_sidebar{top:820px}");
+        GM_addStyle(".vpactionv5_iframe_wrap{margin-top:350px}");
         GM_addStyle("html iframe{display:none}");
         return;
     }
     
     if(window.location.href.indexOf('//www.miaopai.com/')>2){
         GM_addStyle(".header_big{margin-bottom:710px;}.D_video{position:relative;}");
-        GM_addStyle(".D_video,.video_flash,.video_img{width:1000px !important;height:700px !important;}");
+        GM_addStyle(".D_video,.video_flash,.video_img,.video,.video-player{width:1000px !important;height:700px !important;}");
         GM_addStyle(".video_flash,.video_img{position:absolute;top:-740px}");
         return;
     }
@@ -48,7 +49,7 @@
         GM_addStyle(".oM { display:none; }");
         GM_addStyle(".Zs { display:none; }");
         //邮件列表顶部
-        //GM_addStyle(".aKB { display:none; }");
+        GM_addStyle(".a2q { display:none; }");
         GM_addStyle(".a4T .cf { display:none; }");
         return;
     }
