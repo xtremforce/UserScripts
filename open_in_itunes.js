@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         找回「在 iTunes 中查看」按钮
 // @namespace    https://www.iplaysoft.com
-// @version      0.3
+// @version      0.31
 // @description  帮你找回「在 iTunes 中查看」按钮
 // @author       X-Force
 // @match        https://itunes.apple.com/*
 // @grant        none
+// @downloadURL  https://raw.githubusercontent.com/xtremforce/UserScripts/master/open_in_itunes.js
+// @updateURL    https://raw.githubusercontent.com/xtremforce/UserScripts/master/open_in_itunes.js
 // ==/UserScript==
 
 (function() {
